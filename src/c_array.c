@@ -36,13 +36,18 @@ struct cstl_array {
 
 static struct cstl_array *cstl_array_check_and_grow(struct cstl_array *pArray)
 {
-    if (pArray->count >= pArray->capacity) {
-        size_t size;
-        pArray->capacity = 2 * pArray->capacity;
-        size             = pArray->capacity * sizeof(struct cstl_object *);
-        pArray->pElements =
-            (struct cstl_object **)realloc(pArray->pElements, size);
-    }
+	if (pArray->count >= pArray->capacity)
+	{
+		do
+		{
+			pArray->capacity *= 2;
+		}
+		while (pArray->count >= pArray->capacity);
+		size_t size;
+		size             = pArray->capacity * sizeof(struct cstl_object *);
+		pArray->pElements =
+			(struct cstl_object **)realloc(pArray->pElements, size);		
+	}
     return pArray;
 }
 
@@ -140,7 +145,18 @@ cstl_error cstl_array_reserve(struct cstl_array *pArray, size_t new_size)
     if (new_size <= pArray->capacity) {
         return CSTL_ERROR_SUCCESS;
     }
-    cstl_array_check_and_grow(pArray);
+	else
+	{		
+		do
+		{
+			pArray->capacity *= 2;
+		}
+		while (new_size > pArray->capacity);
+		size_t size;
+		size             = pArray->capacity * sizeof(struct cstl_object *);
+		pArray->pElements =
+			(struct cstl_object **)realloc(pArray->pElements, size);		
+	}    
     return CSTL_ERROR_SUCCESS;
 }
 
